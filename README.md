@@ -1,5 +1,7 @@
 # LogixAutocomplete
 
+## NOTE: This mod is currently unfinished.
+
 A [NeosModLoader](https://github.com/zkxs/NeosModLoader) mod for [Neos VR](https://neos.com/) that attempts to add some form of autocompletion to logix.
 
 ### Usage
