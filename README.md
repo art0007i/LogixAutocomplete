@@ -2,6 +2,7 @@
 
 ## NOTE: This mod is currently unfinished.
 
+### Depends on [ReflectionHelper](https://github.com/art0007i/ReflectionHelper)
 A [NeosModLoader](https://github.com/zkxs/NeosModLoader) mod for [Neos VR](https://neos.com/) that attempts to add some form of autocompletion to logix.
 
 ### Usage
