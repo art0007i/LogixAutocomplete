@@ -21,7 +21,7 @@ namespace LogixAutocomplete
     {
         public override string Name => "LogixAutocomplete";
         public override string Author => "art0007i";
-        public override string Version => "0.1.0";
+        public override string Version => "0.1.1";
         public override string Link => "https://github.com/art0007i/LogixAutocomplete/";
 
         [AutoRegisterConfigKey]
@@ -59,7 +59,7 @@ namespace LogixAutocomplete
                 // it basically keeps track of what kind of logix wire you have (input, output, etc.) and what type it is (float, int, etc.)
                 IOPair ourPair;
                 if (____input != null) ourPair = new IOPair(IOType.ValueInput, ____input.InputType);
-                else if (____output != null) ourPair = new IOPair(IOType.ValueInput, LogixHelper.GetOutputContentType(____output));
+                else if (____output != null) ourPair = new IOPair(IOType.ValueOutput, LogixHelper.GetOutputContentType(____output));
                 else if (____impulseTarget != null) ourPair = new IOPair(IOType.ImpulseInput, typeof(Action));
                 else if (____impulseSource != null) ourPair = new IOPair(IOType.ImpulseOutput, typeof(Action));
                 else return true;
@@ -80,8 +80,8 @@ namespace LogixAutocomplete
                     __instance.QuickSetField<Action>("_impulseTarget", null);
                     __instance.QuickSetField<Impulse>("_impulseSource", null);
                 };
-                currentAutocompletePanel = newSlot;
                 __instance.QuickCall("PositionSpawnedNode", new object[] { newSlot });
+                currentAutocompletePanel = newSlot;
                 var mySpace = newSlot.FindSpace("LogixAutocomplete");
                 if(mySpace == null)
                 {
@@ -98,6 +98,19 @@ namespace LogixAutocomplete
                 // TODO: CHANGE THIS TO ACTUALLY GET THE LIST OF TYPES DYNAMICALLY LOL (ALSO GOOD LUCK)
                 IEnumerable<Type> possibleInputs = new Type[] { null };
                 if (Constants.nodeLookup.TryGetValue(ourPair, out var typeList)) possibleInputs = possibleInputs.Concat(typeList);
+
+                var wireTarget = mySpace.GetManager<Slot>("WireTarget", true).Value;
+                if (wireTarget != null)
+                {
+                    ____tempWire.GetComponent<ConnectionWire>().TargetSlot.Target = wireTarget;
+                }
+                var wireType = mySpace.GetManager<int>("WireType", true);
+                if (wireType != null)
+                {
+                    Msg(ourPair.wireType);
+                    Msg((int)ourPair.ioType);
+                    wireType.SetValue((int)ourPair.ioType);
+                }
 
                 var selectedOption = mySpace.GetManager<SyncType>("SelectedOption", true).Value;
                 if(selectedOption != null) selectedOption.Value = null;
@@ -146,6 +159,23 @@ namespace LogixAutocomplete
                     return currentAutocompletePanel.IsDisposed;
                 }
                 return true;
+            }
+
+            [HarmonyPrefix]
+            [HarmonyPatch("PositionSpawnedNode")]
+            public static bool NodePositionPatch(Slot node)
+            {
+                if (currentAutocompletePanel == null) return true;
+                var mySpace = currentAutocompletePanel.FindSpace("LogixAutocomplete");
+                if (mySpace == null) return true;
+                var targetSlot = mySpace.GetManager<Slot>("SpawnPoint", true).Value;
+                if (targetSlot == null) return true;
+
+                node.GlobalPosition = targetSlot.GlobalPosition;
+                node.GlobalRotation = targetSlot.GlobalRotation;
+                node.GlobalScale = targetSlot.GlobalScale;
+                
+                return false;
             }
         }
 
