@@ -28,6 +28,9 @@
     <Reference Include="BaseX">
       <HintPath>$(NeosPath)Neos_Data\Managed\BaseX.dll</HintPath>
     </Reference>
+    <Reference Include="SpecialItemsLib">
+      <HintPath>$(NeosPath)nml_mods/SpecialItemsLib.dll</HintPath>
+    </Reference>
 	<Reference Include="ReflectionHelper">
       <HintPath>$(NeosPath)nml_libs/ReflectionHelper.dll</HintPath>
     </Reference>
